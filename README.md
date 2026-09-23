@@ -6,8 +6,6 @@ Most public pitching metrics live at two extremes:
 
 **cPV+** bridges this gap. It is an **Expected Run Value (xRV)** model built on Statcast data that evaluates every pitch based on three interconnected factors: **what the pitch did** (velo/movement), **where it crossed the plate** (proximity to the edges), and **the exact count state**.
 
-Ratings are scaled like OPS+ or wRC+: **100 is league average**, 115 is one standard deviation above average, and **130+ is elite**.
-
 ---
 
 ## Stability Check: Odd/Even Split-Half Reliability
@@ -37,9 +35,8 @@ Raw run prevention is notoriously noisy in single-season samples ($SB = 0.457$).
 While both models aim to grade total pitch execution rather than just pure shape, they approach the problem differently under the hood:
 
 * **Defining "Ideal Location":** Location+ and Pitching+ rely heavily on **consensus intent**. They group the zone and chase regions into discrete target boxes and heatmaps for each count and pitch type, effectively asking: *"Did this pitch hit the customary target box where this pitch is usually thrown in this count?"* In contrast, cPV+ defines location through **continuous boundary geometry (`d_edge`)**. It measures the exact 2D distance to the perimeter of the strike zone—rewarding painting the black, punishing meatballs over the heart, and scaling penalties smoothly as misses drift off the plate.
-* **Model Architecture:** Pitching+ sits atop a pipeline that trains separate Stuff+ and Location+ components before combining them. cPV+ uses a **single unified regressor** (`HistGradientBoostingRegressor`) where physical traits, release extension, count state, handedness, and edge distance interact simultaneously against marginal run expectancy.
-* **Familiar Scaling:** FanGraphs compresses Pitching+ onto a narrow season-level spread where standard deviations are small (roughly 4–5 points for starting pitchers). cPV+ standardizes final values to an explicit standard deviation of 15 (identical to OPS+ or ERA+), making elite performers (130+) immediately recognizable.
-
+* **Model Architecture:** Pitching+ sits atop a pipeline that trains separate Stuff+ and Location+ components before combining them. cPV+ does this simultaneously. Physical traits, release extension, count state, handedness, and edge distance interact at the same time against marginal run expectancy.
+* **Familiar Scaling:** FanGraphs compresses Pitching+ into a very narrow scale. cPV+ standardizes final values to an explicit standard deviation of 15 (identical to OPS+ or ERA+), making skill differences more noticeable. 
 ---
 
 ## 2025 Leaderboards
