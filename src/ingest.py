@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime
 from pybaseball import statcast
 
-# Full season regular season bounds (omits spring training & postseason)
+
 SEASON_START = "2025-03-27"
 SEASON_END = "2025-09-28"
 RAW_DIR = "raw_chunks_2025"
@@ -28,7 +28,7 @@ WHIFF_EVENTS = {
 def pull_season_data():
     os.makedirs(RAW_DIR, exist_ok=True)
     
-    # Generate 6-day intervals to stay under the Statcast ~25k-40k row query ceiling
+    # Generate 7-day intervals to stay under the Statcast ~25k-40k row query ceiling
     dates = pd.date_range(SEASON_START, SEASON_END, freq="7D")
     intervals = []
     for i in range(len(dates)):
@@ -113,7 +113,6 @@ def process_and_combine():
     ]
     df = df.dropna(subset=vital_cols)
 
-    # Impute missing Hawk-Eye extension and spin using pitch-type medians rather than flat league mean
     # (e.g. curveballs spin way faster than changeups; flat median distorts physics)
     spin_medians = df.groupby('pitch_type')['release_spin_rate'].transform('median')
     df['release_spin_rate'] = df['release_spin_rate'].fillna(spin_medians).fillna(df['release_spin_rate'].median())
