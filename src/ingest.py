@@ -12,8 +12,7 @@ SEASON_END = "2025-09-28"
 RAW_DIR = "raw_chunks_2025"
 OUT_PATH = "cleaned_pitches_2025.csv"
 
-# Statcast pitch flags we actually care about for xRV modeling
-# Drops pitchouts, intentional walks, and unknown tracking noise
+# Filters out metrics that are not necessary
 DISCARD_PITCH_TYPES = {"PO", "IN", "EP", "UN", "KN"}
 
 # Whiffs: swinging strikes, fouls tipped into glove with 2 strikes / missed bunts
@@ -28,7 +27,7 @@ WHIFF_EVENTS = {
 def pull_season_data():
     os.makedirs(RAW_DIR, exist_ok=True)
     
-    # Generate 7-day intervals to stay under the Statcast ~25k-40k row query ceiling
+    # Pull season data in intervals
     dates = pd.date_range(SEASON_START, SEASON_END, freq="7D")
     intervals = []
     for i in range(len(dates)):
