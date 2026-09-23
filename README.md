@@ -45,24 +45,29 @@ Public pitch metrics generally fall into one of two extremes: purely physical mo
 
 ## 2025 cPV+ Leaderboards
 
-*Outputs are standardized to an industry-standard 100-index distribution (mean = 100, std = 15). Values above 100 indicate above-average run prevention; 130+ represents elite performance.*
+*Outputs are indexed to a league-wide 100 baseline (mean = 100, SD = 15). Values above 100 indicate above-average run prevention; 130+ denotes elite performance.*
 
-### Top Pitchers (2025 Regular Season)
+### Top Starting Pitchers (Min. 5 Starts, 1,000 Pitches)
 
-| Pitcher | Pitches | Avg Velo (mph) | Whiff% | Zone% | Total xRV | cPV+ |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Trevor Megill** | 753 | 94.6 | 15.4% | 67.3% | +7.30 | **151.5** |
-| **Robert Suarez** | 1,076 | 96.6 | 13.0% | 68.0% | +7.65 | **137.6** |
-| **Alex Vesia** | 1,000 | 89.2 | 15.5% | 65.7% | +6.93 | **136.6** |
-| **Andrew Kittredge** | 768 | 91.9 | 15.9% | 70.2% | +5.11 | **135.1** |
-| **Reid Detmers** | 1,083 | 88.8 | 16.2% | 66.9% | +6.70 | **132.6** |
-| **Chase Burns** | 764 | 95.4 | 16.8% | 65.3% | +4.61 | **131.7** |
-| **Adrián Morejón** | 994 | 94.5 | 11.5% | 68.8% | +5.91 | **131.3** |
-| **Randy Rodríguez** | 808 | 92.4 | 15.5% | 66.3% | +4.78 | **131.1** |
-| **Kenley Jansen** | 869 | 91.9 | 14.4% | 69.6% | +5.13 | **131.0** |
-| **Garrett Crochet** | 3,150 | 92.3 | 15.2% | 67.1% | +18.46 | **130.8** |
+| Pitcher | Pitches | Avg Velo (mph) | Whiff% | cPV+ |
+| :--- | :---: | :---: | :---: | :---: |
+| **Garrett Crochet** | 3,150 | 92.3 | 15.2% | **131.8** |
+| **Shota Imanaga** | 2,107 | 86.2 | 13.1% | **131.5** |
+| **Tarik Skubal** | 2,849 | 93.1 | 17.8% | **130.5** |
+| **Hunter Greene** | 1,748 | 94.8 | 16.8% | **130.2** |
+| **Jacob deGrom** | 2,614 | 93.1 | 15.6% | **129.3** |
 
-*(Note: Total xRV reflects cumulative expected runs prevented above league average).*
+### Top Relievers (Min. 400 Pitches, <5 Starts)
+
+| Pitcher | Pitches | Avg Velo (mph) | Whiff% | cPV+ |
+| :--- | :---: | :---: | :---: | :---: |
+| **Trevor Megill** | 753 | 94.6 | 15.4% | **151.5** |
+| **Robert Suarez** | 1,076 | 96.6 | 13.0% | **138.2** |
+| **Alex Vesia** | 1,000 | 89.2 | 15.5% | **137.3** |
+| **Andrew Kittredge** | 768 | 91.9 | 15.9% | **135.9** |
+| **Justin Slaten** | 499 | 91.9 | 15.0% | **134.6** |
+
+> **Role Segmentation Note:** Traditional ERA and FIP take significant time to stabilize for relievers due to small plate-appearance samples (often 50–65 innings per year). Because cPV+ evaluates pitch execution on every single pitch thrown, it stabilizes substantially faster over relief workloads (~400–1,000 pitches) while insulating relievers from defense and inherited-runner noise.
 
 ---
 
