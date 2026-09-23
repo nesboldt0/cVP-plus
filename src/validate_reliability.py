@@ -99,7 +99,9 @@ eval_metrics = [
     ('Whiff Rate', 'odd_whiff', 'even_whiff'),
     ('cPV+ (xRV)', 'odd_cpv', 'even_cpv')
 ]
-
+# the reason why this file is even included in the first place is this is testing to see how "good" of a metric cPV+ is
+# it tests it against whiff rate and raw run value. Whiff rate is a great metric but it doesn't actually tell you how many runs are prevented and raw run rate
+# has its own issues. cPV+ aims to be as reliable as reliable as whiff rate but measure run prevention instead of how often the batter missed
 print("N pitchers:", len(splits), f"(min {min_pitches} pitches)")
 print("-" * 52)
 for name, c1, c2 in eval_metrics:
