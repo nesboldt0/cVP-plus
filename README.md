@@ -43,6 +43,29 @@ Public pitch metrics generally fall into one of two extremes: purely physical mo
 
 ---
 
+## 2025 cPV+ Leaderboards
+
+*Outputs are standardized to an industry-standard 100-index distribution (mean = 100, std = 15). Values above 100 indicate above-average run prevention; 130+ represents elite performance.*
+
+### Top Pitchers (2025 Regular Season)
+
+| Pitcher | Pitches | Avg Velo (mph) | Whiff% | Zone% | Total xRV | cPV+ |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Trevor Megill** | 753 | 94.6 | 15.4% | 67.3% | +7.30 | **151.5** |
+| **Robert Suarez** | 1,076 | 96.6 | 13.0% | 68.0% | +7.65 | **137.6** |
+| **Alex Vesia** | 1,000 | 89.2 | 15.5% | 65.7% | +6.93 | **136.6** |
+| **Andrew Kittredge** | 768 | 91.9 | 15.9% | 70.2% | +5.11 | **135.1** |
+| **Reid Detmers** | 1,083 | 88.8 | 16.2% | 66.9% | +6.70 | **132.6** |
+| **Chase Burns** | 764 | 95.4 | 16.8% | 65.3% | +4.61 | **131.7** |
+| **Adrián Morejón** | 994 | 94.5 | 11.5% | 68.8% | +5.91 | **131.3** |
+| **Randy Rodríguez** | 808 | 92.4 | 15.5% | 66.3% | +4.78 | **131.1** |
+| **Kenley Jansen** | 869 | 91.9 | 14.4% | 69.6% | +5.13 | **131.0** |
+| **Garrett Crochet** | 3,150 | 92.3 | 15.2% | 67.1% | +18.46 | **130.8** |
+
+*(Note: Total xRV reflects cumulative expected runs prevented above league average).*
+
+---
+
 ## Project Structure
 
 - src/ingest.py: Statcast data retrieval and initial cleaning.
