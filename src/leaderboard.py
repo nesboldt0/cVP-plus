@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 
-# Load full-season 2025 tables
+
 PITCHERS_FILE = "pitcher_cPV_ratings_2025.csv"
 ARSENAL_FILE = "pitcher_arsenal_ratings_2025.csv"
 
