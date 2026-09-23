@@ -6,6 +6,7 @@ from pybaseball import playerid_reverse_lookup
 
 t_start = time.time()
 
+# lets get all our data, kinda hard to do aything without it
 df = pd.read_csv("cleaned_pitches_2025.csv")
 m = joblib.load("xrv_quality_model_2025.joblib")
 
@@ -51,6 +52,8 @@ df['xrv'] = -preds
 
 # identify starts using pitch volume per game_date
 # outings with >= 50 pitches count as a start
+# if you throw more than 50 pitches in relief, theres other problems...
+# im choosing to seperate starters and releivers for more fair comparison
 game_counts = df.groupby(['pitcher', 'game_date']).size().reset_index()
 game_counts.columns = ['pitcher', 'game_date', 'game_pitches']
 
@@ -78,6 +81,7 @@ qual = grp[grp['n_pitches'] >= MIN_P].copy()
 qual['cpv_per_100'] = (qual['tot_xrv'] / qual['n_pitches']) * 100.0
 
 # 100 index scale
+# indexing to 100 keeps the data readable and similair to other "+" stats
 mu = qual['cpv_per_100'].mean()
 sd = qual['cpv_per_100'].std()
 
@@ -113,6 +117,7 @@ is_reliever = (qual['gs'] < 5) & (qual['n_pitches'] >= 400)
 relievers = qual[is_reliever].copy()
 
 # repertoire splits
+# this allows us to look up a pitchers certain "repitoire", displaying what pitches they execute the best
 sub = df[df['pitcher'].isin(qual['pitcher'])].copy()
 
 ars = sub.groupby(['pitcher', 'pitch_type']).agg({
@@ -133,7 +138,7 @@ ars['pitch_cPV_plus'] = np.round(100.0 + (ars_z * 15.0), 1)
 ars['player_name'] = ars['pitcher'].map(id2name)
 ars['player_name'] = ars['player_name'].fillna("Unknown")
 
-# exports
+# export and pray everything worked
 qual.to_csv("pitcher_cPV_ratings_2025.csv", index=False)
 starters.to_csv("starter_cPV_ratings_2025.csv", index=False)
 relievers.to_csv("reliever_cPV_ratings_2025.csv", index=False)
