@@ -87,7 +87,7 @@ mdl = HistGradientBoostingRegressor(
     l2_regularization=0.3,
     random_state=42
 )
-
+# train our model, this is what helps us predict expected runs 
 mdl.fit(X_train, y_train)
 
 val_preds = mdl.predict(X_val)
@@ -97,4 +97,5 @@ print(f"Validation RMSE: {rmse:.4f}")
 
 # save model artifact
 joblib.dump(mdl, "xrv_quality_model_2025.joblib")
+# print out a confirmation that it all ran
 print("Saved model -> xrv_quality_model_2025.joblib")
