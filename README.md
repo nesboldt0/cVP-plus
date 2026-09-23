@@ -1,51 +1,50 @@
-﻿# cPV+ (Contextual Pitch Value Plus)
+# cPV+ (Contextual Pitch Value Plus)
 
-**cPV+** is an expected run value (xRV) pitch evaluation model designed to isolate pitcher-controlled performance from fielding, park, and sequencing noise. Built on regular-season Statcast tracking data, the model uses a gradient-boosted regression architecture (HistGradientBoostingRegressor) trained on pitch kinematics, release characteristics, and spatial plate locations across dynamic count states.
+Most public pitching metrics live at two extremes:
+1. **Physical "Stuff" models (Stuff+)** evaluate velocity and break in a vacuum, ignoring pitch location and treating an 0-2 pitch the same as a 3-0 pitch.
+2. **Outcome stats (ERA, FIP, raw Run Value)** take hundreds of innings to stabilize and are heavily polluted by defense, park factors, and sequencing luck.
 
-Outputs are standardized to an industry-standard 100-index distribution (mean = 100, std = 15), where higher values represent superior run prevention.
+**cPV+** bridges this gap. It is an **Expected Run Value (xRV)** model built on Statcast data that evaluates every pitch based on three interconnected factors: **what the pitch did** (velo/movement), **where it crossed the plate** (proximity to the edges), and **the exact count state**.
+
+Ratings are scaled like OPS+ or wRC+: **100 is league average**, 115 is one standard deviation above average, and **130+ is elite**.
 
 ---
 
-## Metric Stability (Split-Half Reliability)
+## Stability Check: Odd/Even Split-Half Reliability
 
-To evaluate whether cPV+ captures true underlying talent rather than outcome noise, an odd/even split-half reliability test was conducted across qualified MLB pitchers (min. 750 pitches):
+To test if cPV+ measures repeatable pitcher skill rather than random outcome noise, pitchers' 2025 seasons were split into odd and even pitches (min. 750 pitches):
 
-| Metric | Pearson r (Half) | Spearman-Brown (SB) |
+| Metric | Pearson r (Half) | Spearman-Brown Reliability |
 | :--- | :---: | :---: |
-| **Raw Outcomes (Delta RE)** | 0.296 | 0.457 |
+| **Raw Run Value (Delta RE)** | 0.296 | 0.457 |
 | **Whiff Rate** | 0.800 | 0.889 |
-| **cPV+ (xRV Index)** | **0.740** | **0.850** |
+| **cPV+** | **0.740** | **0.850** |
 
-*cPV+ nearly doubles the single-season stability of raw run prevention (SB = 0.850 vs. 0.457), approaching the stability of whiff rate while preserving an expected-run scale.*
+Raw run prevention is notoriously noisy in single-season samples ($SB = 0.457$). cPV+ nearly doubles that stability ($SB = 0.850$), approaching the reliability of pure whiff rate while staying directly tied to run prevention.
 
 ---
 
-## Comparison: How cPV+ Differs & Adds Value
+## How cPV+ Differs
 
-Public pitch metrics generally fall into one of two extremes: purely physical model abstractions (Stuff+) or noisy retrospective outcomes (Delta Run Expectancy / ERA-estimators). **cPV+** bridges this gap as an in-context **Expected Run Value (xRV)** framework.
-
-| Metric Family | Example Metrics | What It Measures | In-Season Noise / Flaws | Where cPV+ Wins |
+| Metric Type | Examples | What It Measures | The Blind Spot | How cPV+ Handles It |
 | :--- | :--- | :--- | :--- | :--- |
-| **Pure Kinematic ("Stuff")** | FanGraphs Stuff+, PitchingBot (Stuff) | Movement, velo, and release geometry ignoring location | Blind to execution, count leverage, and spray command | Isolates mechanical shape while embedding count-dependent plate leverage (`d_edge`). |
-| **Location Only ("Command")** | Location+, PitchingBot (Command) | Proximity to generic target heatmaps | Fails to weigh pitch physics; 98 mph up differs from 91 mph up | Unifies pitch flight kinetics with dynamic 2D edge distance in a single non-linear surface. |
-| **Retrospective Results** | FanGraphs Pitch Values (wFA, wSL), Delta RE | Actual observed outcomes (hits, outs, home runs) | High sample variance ($SB = 0.457$); heavily biased by defense, BABIP, and sequencing | Replaces discrete hit outcomes with continuous expected run values ($SB = 0.850$). |
+| **Stuff Only** | Stuff+, PitchingBot (Stuff) | Velocity, movement, release point | Ignores location; treats a 98 mph fastball down the middle the same on 0-2 and 3-0. | Evaluates pitch shape alongside count-dependent plate location. |
+| **Overall Process** | FanGraphs Pitching+ | Blended model of physical stuff, count, and target-zone location | Defines location through discrete target boxes and clusters; uses a tight spread where 108 is elite. | Measures continuous border geometry (`d_edge`) in a single model, scaled so 130+ stands out as elite. |
+| **Results** | Pitch Values (wFA, wSL), Delta RE | Actual game outcomes (hits, outs) | Very noisy ($SB = 0.457$); swayed by defense, BABIP, and park dimensions. | Evaluates pitch quality at the plate, removing fielding and batted-ball luck. |
 
-### Key Theoretical Distinctions
+### cPV+ vs. Pitching+ (FanGraphs)
 
-1. **True Run-Scale Anchor vs. Arbitrary Grades:** Unlike Stuff+ models that scale features against empirical whiff or chase rates in isolation, cPV+ optimizes directly to marginal run expectancy ($\Delta RE$). Every point of cPV+ reflects tangible expected run prevention without relying on uncoupled subjective sub-grades.
-2. **Context-Sensitive Plate Leverage:** Throwing a sweeper middle-down on 0-2 carries a completely different expectation than on 3-1. cPV+ conditions both pitch physics and plate proximity on the live count state rather than evaluating ball flight in a vacuum.
-3. **Defense & Batted-Ball Neutrality:** By evaluating pitch execution at the point of plate transit rather than the point of contact or defensive fielding, cPV+ prevents outfield range, wall dimensions, and batted-ball luck from polluting a pitcher's grade.
-## Methodological Overview
+While both models aim to grade total pitch execution rather than just pure shape, they approach the problem differently under the hood:
 
-- **Catcher-to-Pitcher Coordinate Inversion:** Re-indexes horizontal movement (hb_p) so arm-side and glove-side run are symmetric regardless of throwing hand.
-- **Plate Boundary Distance:** Calculates 2D Euclidean distance (d_edge) from the borders of the rule-book strike zone to quantify command leverage outside heart-cut zones.
-- **Platoon Interactions:** Models same-hand vs. opposite-hand matchups to account for breaking ball trajectory differentials.
+* **Defining "Ideal Location":** Location+ and Pitching+ rely heavily on **consensus intent**. They group the zone and chase regions into discrete target boxes and heatmaps for each count and pitch type, effectively asking: *"Did this pitch hit the customary target box where this pitch is usually thrown in this count?"* In contrast, cPV+ defines location through **continuous boundary geometry (`d_edge`)**. It measures the exact 2D distance to the perimeter of the strike zone—rewarding painting the black, punishing meatballs over the heart, and scaling penalties smoothly as misses drift off the plate.
+* **Model Architecture:** Pitching+ sits atop a pipeline that trains separate Stuff+ and Location+ components before combining them. cPV+ uses a **single unified regressor** (`HistGradientBoostingRegressor`) where physical traits, release extension, count state, handedness, and edge distance interact simultaneously against marginal run expectancy ($\Delta RE$).
+* **Familiar Scaling:** FanGraphs compresses Pitching+ onto a narrow season-level spread where standard deviations are small (roughly 4–5 points for starting pitchers). cPV+ standardizes final values to an explicit standard deviation of 15 (identical to OPS+ or ERA+), making elite performers (130+) immediately recognizable.
 
 ---
 
-## 2025 cPV+ Leaderboards
+## 2025 Leaderboards
 
-*Outputs are indexed to a league-wide 100 baseline (mean = 100, SD = 15). Values above 100 indicate above-average run prevention; 130+ denotes elite performance.*
+*Scale: 100 = MLB Average, SD = 15. Higher is better.*
 
 ### Top Starting Pitchers (Min. 5 Starts, 1,000 Pitches)
 
@@ -67,15 +66,21 @@ Public pitch metrics generally fall into one of two extremes: purely physical mo
 | **Andrew Kittredge** | 768 | 91.9 | 15.9% | **135.9** |
 | **Justin Slaten** | 499 | 91.9 | 15.0% | **134.6** |
 
-> **Role Segmentation Note:** Traditional ERA and FIP take significant time to stabilize for relievers due to small plate-appearance samples (often 50–65 innings per year). Because cPV+ evaluates pitch execution on every single pitch thrown, it stabilizes substantially faster over relief workloads (~400–1,000 pitches) while insulating relievers from defense and inherited-runner noise.
+> **Why split starters and relievers?** Relievers typically throw max-effort over 50–70 innings per year, leading to higher velocity and whiff rates that inflate pitch-level models over lower workloads. Separating roles provides a fair comparison for workhorse starters like Crochet (3,100+ pitches) alongside high-leverage relievers.
 
 ---
 
 ## Project Structure
 
-- src/ingest.py: Statcast data retrieval and initial cleaning.
-- src/train_model.py: Gradient-boosted run expectancy surface training.
-- src/export_ratings.py: Scores season pitches and exports 100-indexed player/arsenal leaderboards.
-- src/validate_reliability.py: Odd/even pitch sequencing validation engine.
-- output/pitcher_cPV_ratings_2025.csv: Overall pitcher ratings and peripheral benchmarks.
-- output/pitcher_arsenal_ratings_2025.csv: Pitch-type level breakdowns.
+```text
+├── src/
+│   ├── ingest.py               # Pulls and cleans raw Statcast pitch data
+│   ├── train_model.py          # Trains the gradient-boosted xRV model
+│   ├── export_ratings.py       # Scores pitches and exports leaderboards
+│   └── validate_reliability.py # Odd/even split-half reliability engine
+├── data/
+│   ├── starter_cPV_ratings_2025.csv   # Qualified starters leaderboard
+│   ├── reliever_cPV_ratings_2025.csv  # Qualified relievers leaderboard
+│   ├── pitcher_cPV_ratings_2025.csv   # Full pitcher leaderboard
+│   └── pitcher_arsenal_ratings_2025.csv # Individual pitch-type ratings
+└── README.md
