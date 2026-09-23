@@ -1,0 +1,8 @@
+cleaned_pitches_2025.csv
+*.csv.gz
+*.joblib
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.vscode/
