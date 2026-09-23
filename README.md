@@ -22,7 +22,7 @@ To test if cPV+ measures repeatable pitcher skill rather than random outcome noi
 | **Whiff Rate** | 0.800 | 0.889 |
 | **cPV+** | **0.740** | **0.850** |
 
-Raw run prevention is an alright statistic, its a good thing to measure how well a pitcher prevents runs, but its certainly not perfect. Whiff rate is also decent as if the batters miss the ball, it was probably a good pitch, but there's some amount of luck involved with whiff rate. cPV+ scored the same level of reliability as whiff rate but unlike whiff rate cPV+ is rooted in run prevention, not if the batter missed the ball, thus taking some amount of luck out of the equation.
+Raw run prevention is an alright statistic, its a good thing to measure how well a pitcher prevents runs, but its certainly not perfect. Whiff rate is also decent as if the batters miss the ball, it was probably a good pitch, but there's some amount of luck involved with whiff rate. cPV+ scored the same level of reliability as whiff rate but unlike whiff rate, cPV+ is rooted in run prevention, not if the batter missed the ball, thus taking some amount of luck out of the equation.
 
 ---
 
