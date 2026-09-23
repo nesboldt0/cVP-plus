@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime
 from pybaseball import statcast
 
-
+# I am only doing the 2025 season for this due to it being the most recent FULLY completed season
 SEASON_START = "2025-03-27"
 SEASON_END = "2025-09-28"
 RAW_DIR = "raw_chunks_2025"
@@ -28,7 +28,7 @@ def pull_season_data():
     if not os.path.exists(RAW_DIR):
         os.makedirs(RAW_DIR)
     
-    # Pull season data in intervals
+    # Pull season data in intervals so my computer doesnt die
     dates = pd.date_range(SEASON_START, SEASON_END, freq="7D")
     intervals = []
     
@@ -99,7 +99,7 @@ def process_and_combine():
         if os.path.getsize(f) == 0:
             continue
             
-        # Only parse necessary columns to conserve RAM during concat
+        # Only parse necessary columns
         try:
             chunk = pd.read_csv(f, usecols=cols, low_memory=False)
             chunks.append(chunk)
@@ -113,8 +113,7 @@ def process_and_combine():
             chunks.append(raw[valid])
 
     df = pd.concat(chunks, ignore_index=True)
-
-    # Data hygiene filters
+    
     df = df[~df['pitch_type'].isin(DISCARD_PITCH_TYPES)]
     
     # Must have non-null tracking metrics and ground-truth run values
@@ -149,7 +148,7 @@ def process_and_combine():
     df.to_csv(OUT_PATH, index=False)
     print(f"Exported training table -> {OUT_PATH}")
 
-
+# Run it all and move on with my life
 if __name__ == "__main__":
     pull_season_data()
     process_and_combine()
