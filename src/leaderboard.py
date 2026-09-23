@@ -15,28 +15,45 @@ def show_leaderboard(min_pitches=750, top_n=15, sort_by="cPV_plus", ascending=Fa
         print(f"Column '{sort_by}' not found. Defaulting to 'cPV_plus'.")
         sort_by = "cPV_plus"
 
-    sub = (
-        pitchers[pitchers["pitches"] >= min_pitches]
-        .sort_values(by=sort_by, ascending=ascending)
-        .head(top_n)
-    )
+    sub = pitchers[pitchers["n_pitches"] >= min_pitches]
+    sub = sub.sort_values(by=sort_by, ascending=ascending)
+    sub = sub.head(top_n)
 
     cols = [
         "player_name",
-        "pitches",
-        "avg_velo",
-        "whiff_rate",
-        "zone_rate",
-        "total_xrv",
+        "n_pitches",
+        "velo",
+        "whiff",
+        "zone",
+        "tot_xrv",
         "cPV_plus",
     ]
 
     # Format percentages and floats for clean console reading
     display_df = sub[cols].copy()
-    display_df["whiff_rate"] = display_df["whiff_rate"].map("{:.1%}".format)
-    display_df["zone_rate"] = display_df["zone_rate"].map("{:.1%}".format)
-    display_df["avg_velo"] = display_df["avg_velo"].map("{:.1f}".format)
-    display_df["total_xrv"] = display_df["total_xrv"].map("{:+.2f}".format)
+    
+    formatted_whiff = []
+    for val in display_df["whiff"]:
+        formatted_whiff.append(f"{val:.1%}")
+    display_df["whiff"] = formatted_whiff
+
+    formatted_zone = []
+    for val in display_df["zone"]:
+        formatted_zone.append(f"{val:.1%}")
+    display_df["zone"] = formatted_zone
+
+    formatted_velo = []
+    for val in display_df["velo"]:
+        formatted_velo.append(f"{val:.1f}")
+    display_df["velo"] = formatted_velo
+
+    formatted_xrv = []
+    for val in display_df["tot_xrv"]:
+        formatted_xrv.append(f"{val:+.2f}")
+    display_df["tot_xrv"] = formatted_xrv
+
+    # Rename display columns for clean console header presentation
+    display_df.columns = ["Player", "Pitches", "Velo", "Whiff%", "Zone%", "Net xRV", "cPV+"]
 
     print(f"\n{'='*78}")
     print(
@@ -52,23 +69,24 @@ def get_scout_card(player_name):
     matches = pitchers[
         pitchers["player_name"].str.contains(player_name, case=False, na=False)
     ]
-    if matches.empty:
+    if len(matches) == 0:
         print(f"\nNo qualified pitcher found matching '{player_name}'.")
         return
 
     p = matches.iloc[0]
     p_id = p["pitcher"]
-    p_arsenal = arsenal[arsenal["pitcher"] == p_id].sort_values(
-        by="pitches", ascending=False
-    )
-    total_p = p_arsenal["pitches"].sum()
+    
+    p_arsenal = arsenal[arsenal["pitcher"] == p_id]
+    p_arsenal = p_arsenal.sort_values(by="n_pitches", ascending=False)
+    
+    total_p = p_arsenal["n_pitches"].sum()
 
     print("\n" + "=" * 70)
     print(
-        f" {p['player_name'].upper()} | cPV+: {p['cPV_plus']:.1f} | Net Runs Saved (xRV): {p['total_xrv']:+.2f}"
+        f" {p['player_name'].upper()} | cPV+: {p['cPV_plus']:.1f} | Net Runs Saved (xRV): {p['tot_xrv']:+.2f}"
     )
     print(
-        f" 2025 Pitches: {int(p['pitches']):,} | Mean Velo: {p['avg_velo']:.1f} mph | Whiff%: {p['whiff_rate']:.1%} | Zone%: {p['zone_rate']:.1%}"
+        f" 2025 Pitches: {int(p['n_pitches']):,} | Mean Velo: {p['velo']:.1f} mph | Whiff%: {p['whiff']:.1%} | Zone%: {p['zone']:.1%}"
     )
     print("=" * 70)
     print(
@@ -76,12 +94,13 @@ def get_scout_card(player_name):
     )
     print("-" * 70)
 
-    for _, r in p_arsenal.iterrows():
-        usage = (r["pitches"] / total_p) * 100
+    for i in range(len(p_arsenal)):
+        r = p_arsenal.iloc[i]
+        usage = (r["n_pitches"] / total_p) * 100
         print(
-            f"{r['pitch_type']:<6} | {usage:>5.1f}% | {r['avg_velo']:>5.1f} | "
-            f"{r['avg_pfx_x']:>7.2f}\" | {r['avg_pfx_z']:>7.2f}\" | "
-            f"{r['whiff_rate']:>6.1%} | {r['pitch_cPV_plus']:>6.1f}"
+            f"{r['pitch_type']:<6} | {usage:>5.1f}% | {r['velo']:>5.1f} | "
+            f"{r['hb']:>7.2f}\" | {r['ivb']:>7.2f}\" | "
+            f"{r['whiff']:>6.1%} | {r['pitch_cPV_plus']:>6.1f}"
         )
     print("=" * 70 + "\n")
 
