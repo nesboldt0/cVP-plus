@@ -6,7 +6,6 @@ from pybaseball import playerid_reverse_lookup
 
 t_start = time.time()
 
-# load raw full season set + booster
 df = pd.read_csv("cleaned_pitches_2025.csv")
 m = joblib.load("xrv_quality_model_2025.joblib")
 
