@@ -4,7 +4,11 @@ Most public pitching metrics live at two extremes:
 1. **Physical "Stuff" models (Stuff+)** evaluate velocity and break in a vacuum, ignoring pitch location and treating an 0-2 pitch the same as a 3-0 pitch.
 2. **Outcome stats (ERA, FIP, raw Run Value)** take hundreds of innings to stabilize and are heavily polluted by defense, park factors, and sequencing luck.
 
+As a pitcher myself, I hate the phrase "good pitch, better swing" because yeah, that was a good pitch, but no one remembers that, they remember the hit I let up. 
+
 **cPV+** bridges this gap. It is an **Expected Run Value (xRV)** model built on Statcast data that evaluates every pitch based on three interconnected factors: **what the pitch did** (velo/movement), **where it crossed the plate** (proximity to the edges), and **the exact count state**.
+
+Essentially it measure how well a pitcher executes his pitches (execution being a mix of velo, location, and situation)
 
 ---
 
@@ -18,7 +22,7 @@ To test if cPV+ measures repeatable pitcher skill rather than random outcome noi
 | **Whiff Rate** | 0.800 | 0.889 |
 | **cPV+** | **0.740** | **0.850** |
 
-Raw run prevention is notoriously noisy in single-season samples ($SB = 0.457$). cPV+ nearly doubles that stability ($SB = 0.850$), approaching the reliability of pure whiff rate while staying directly tied to run prevention.
+Raw run prevention is an alright statistic, its a good thing to measure _how well does a pitcher prevent runs?_ but its certainly not perfect. Whiff rate is also decent as if the batters miss the ball, they can't score any runs. cPV+ scored the same level of reliability as whiff rate but unlike whiff rate cPV+ is rooted in run prevention, not if the batter missed the ball.
 
 ---
 
@@ -32,9 +36,11 @@ Raw run prevention is notoriously noisy in single-season samples ($SB = 0.457$).
 
 ### cPV+ vs. Pitching+ (FanGraphs)
 
-While both models aim to grade total pitch execution rather than just pure shape, they approach the problem differently under the hood:
+Let me start this section by saying that Pitching+ is a fantastic metric and shares some similarities with cPV+ and that's why it gets its own section, I want to distinguish these two so no one asks "isn't this just Pitching+"
 
-* **Defining "Ideal Location":** Location+ and Pitching+ rely heavily on **consensus intent**. They group the zone and chase regions into discrete target boxes and heatmaps for each count and pitch type, effectively asking: *"Did this pitch hit the customary target box where this pitch is usually thrown in this count?"* In contrast, cPV+ defines location through **continuous boundary geometry (`d_edge`)**. It measures the exact 2D distance to the perimeter of the strike zone—rewarding painting the black, punishing meatballs over the heart, and scaling penalties smoothly as misses drift off the plate.
+While both models aim to grade total pitch execution rather than just pure shape, they approach the problem differently in how its calculated:
+
+* **Defining "Ideal Location":** Location+ and Pitching+ rely heavily on **consensus intent**. They group the zone and chase regions into discrete target boxes and heatmaps for each count and pitch type, effectively asking: *"Did this pitch hit the target box where this pitch is usually thrown in this count?"* In contrast, cPV+ defines location through **continuous boundary geometry (`d_edge`)**. It measures the exact 2D distance to the perimeter of the strike zone—rewarding painting the black and scaling penalties smoothly as misses drift off the plate. Essentially even if your throw a good slider that painted the black, if it wasn't in the heatmap for Pitching+, Pitching+ will count it unfairly, cPV+ won't because after all, all pitchers are different.
 * **Model Architecture:** Pitching+ sits atop a pipeline that trains separate Stuff+ and Location+ components before combining them. cPV+ does this simultaneously. Physical traits, release extension, count state, handedness, and edge distance interact at the same time against marginal run expectancy.
 * **Familiar Scaling:** FanGraphs compresses Pitching+ into a very narrow scale. cPV+ standardizes final values to an explicit standard deviation of 15 (identical to OPS+ or ERA+), making skill differences more noticeable. 
 ---
@@ -63,7 +69,9 @@ While both models aim to grade total pitch execution rather than just pure shape
 | **Andrew Kittredge** | 768 | 91.9 | 15.9% | **135.9** |
 | **Justin Slaten** | 499 | 91.9 | 15.0% | **134.6** |
 
-> **Why split starters and relievers?** Relievers typically throw max-effort over 50–70 innings per year, leading to higher velocity and whiff rates that inflate pitch-level models over lower workloads. Separating roles provides a fair comparison for workhorse starters like Crochet (3,100+ pitches) alongside high-leverage relievers.
+One thing that is super interesting to me is the inclusion of Alex Vesia. He doesn't stand out on a typical stat sheet, but according to cPV+ he's the third best reliever at executing pitches.
+
+> **Why split starters and relievers?** Relievers typically throw max-effort over 50–70 innings per year, leading to higher velocity and whiff rates that inflate pitch-level models over lower workloads. Separating roles provides a fair comparison for workhorse starters like Crochet (3,100+ pitches) alongside high-leverage relievers. Essentially if you are a reliever you can go max-effort compared to starters who have to "pace" themselves throughout a game. This means that this metric will inherently favor relievers over starters. That's why I felt it was fair to separate the two.  
 
 ---
 
