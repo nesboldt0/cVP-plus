@@ -39,9 +39,12 @@ feats = pd.DataFrame({
 # invert: positive xrv = run prevention
 df['xrv'] = -m.predict(feats)
 
-# qual minimum: 750 pitches
-MIN_P = 750
+# identify starts using pitch volume per game_date
+# outings with >= 50 pitches count as a start
+game_counts = df.groupby(['pitcher', 'game_date']).size().reset_index(name='game_pitches')
+starts = game_counts[game_counts['game_pitches'] >= 50].groupby('pitcher').size().rename('gs')
 
+# group per pitcher
 grp = df.groupby('pitcher').agg(
     n_pitches=('xrv', 'count'),
     tot_xrv=('xrv', 'sum'),
@@ -50,6 +53,11 @@ grp = df.groupby('pitcher').agg(
     zone=('in_zone', 'mean')
 ).reset_index()
 
+grp = grp.merge(starts, on='pitcher', how='left').fillna({'gs': 0})
+grp['gs'] = grp['gs'].astype(int)
+
+# 400 pitch min across league for scaling
+MIN_P = 400
 qual = grp[grp['n_pitches'] >= MIN_P].copy()
 qual['cpv_per_100'] = (qual['tot_xrv'] / qual['n_pitches']) * 100.0
 
@@ -65,6 +73,13 @@ lut['full_name'] = lut['name_first'].str.capitalize() + ' ' + lut['name_last'].s
 id2name = dict(zip(lut['key_mlbam'], lut['full_name']))
 
 qual['player_name'] = qual['pitcher'].map(id2name).fillna("Unknown")
+
+cols = ['player_name', 'pitcher', 'gs', 'n_pitches', 'velo', 'whiff', 'zone', 'tot_xrv', 'cPV_plus']
+qual = qual.sort_values('cPV_plus', ascending=False)[cols]
+
+# split starters and relievers
+starters = qual[(qual['gs'] >= 5) & (qual['n_pitches'] >= 1000)].copy()
+relievers = qual[(qual['gs'] < 5) & (qual['n_pitches'] >= 400)].copy()
 
 # repertoire splits
 sub = df[df['pitcher'].isin(qual['pitcher'])].copy()
@@ -82,12 +97,12 @@ ars['cpv_per_100'] = (ars['tot_xrv'] / ars['n_pitches']) * 100.0
 ars['pitch_cPV_plus'] = np.round(100.0 + ((ars['cpv_per_100'] - mu) / sd) * 15.0, 1)
 ars['player_name'] = ars['pitcher'].map(id2name).fillna("Unknown")
 
-cols = ['player_name', 'pitcher', 'n_pitches', 'velo', 'whiff', 'zone', 'tot_xrv', 'cPV_plus']
-qual = qual.sort_values('cPV_plus', ascending=False)[cols]
-
+# exports
 qual.to_csv("pitcher_cPV_ratings_2025.csv", index=False)
+starters.to_csv("starter_cPV_ratings_2025.csv", index=False)
+relievers.to_csv("reliever_cPV_ratings_2025.csv", index=False)
 ars.to_csv("pitcher_arsenal_ratings_2025.csv", index=False)
 
-print("done. qualified pitchers: %d | mu: %.3f, sd: %.3f | time: %.1fs" % (
-    len(qual), mu, sd, (time.time() - t_start)
+print("done. starters: %d | relievers: %d | mu: %.3f, sd: %.3f | time: %.1fs" % (
+    len(starters), len(relievers), mu, sd, (time.time() - t_start)
 ))
