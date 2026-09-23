@@ -31,7 +31,7 @@ Raw run prevention is an alright statistic, its a good thing to measure how well
 | Metric Type | Examples | What It Measures | The Blind Spot | How cPV+ Handles It |
 | :--- | :--- | :--- | :--- | :--- |
 | **Stuff Only** | Stuff+, PitchingBot (Stuff) | Velocity, movement, release point | Ignores location; treats a 98 mph fastball down the middle the same on 0-2 and 3-0. | Evaluates pitch shape alongside count-dependent plate location. |
-| **Overall Process** | FanGraphs Pitching+ | Blended model of physical stuff, count, and target-zone location | Defines location through discrete target boxes and clusters; uses a tight spread where 108 is elite. | Measures continuous border geometry (`d_edge`) in a single model, scaled so 130+ stands out as elite. |
+| **Overall Process** | FanGraphs Pitching+ | Blended model of physical stuff, count, and target-zone location | Defines location through discrete target boxes and clusters; uses a tight spread. | Measures continuous border geometry (`d_edge`) in a single model, scaled so 130+ stands out more. |
 | **Results** | Pitch Values (wFA, wSL), Delta RE | Actual game outcomes (hits, outs) | Very noisy ($SB = 0.457$); swayed by defense, BABIP, and park dimensions. | Evaluates pitch quality at the plate, removing fielding and batted-ball luck. |
 
 ### cPV+ vs. Pitching+ (FanGraphs)
