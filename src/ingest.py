@@ -70,7 +70,7 @@ def pull_season_data():
                 df_chunk.to_csv(chunk_file, index=False)
                 success = True
                 
-                # Brief sleep to avoid hitting Savant rate limits
+                # Brief sleep to avoid hitting Savant rate limits because im too fast and they don't like that
                 time.sleep(1.5)
                 
             except (requests.exceptions.RequestException, Exception):
