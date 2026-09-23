@@ -8,7 +8,7 @@ ARSENAL_FILE = "pitcher_arsenal_ratings_2025.csv"
 pitchers = pd.read_csv(PITCHERS_FILE)
 arsenal = pd.read_csv(ARSENAL_FILE)
 
-
+# this will allow us to sort through all the qualified pitchers (theres a lot) and sort them by their cPV+
 def show_leaderboard(min_pitches=750, top_n=15, sort_by="cPV_plus", ascending=False):
     """Print the league leaderboard ordered by the specified metric."""
     if sort_by not in pitchers.columns:
@@ -63,7 +63,8 @@ def show_leaderboard(min_pitches=750, top_n=15, sort_by="cPV_plus", ascending=Fa
     print(display_df.to_string(index=False))
     print(f"{'='*78}\n")
 
-
+# this is just to take all the data we already have and put it on a readable "scout card"
+# this makes looking up pitchers stats actually bearable to look at
 def get_scout_card(player_name):
     """Print a detailed player summary and pitch-level repertoire card."""
     matches = pitchers[
