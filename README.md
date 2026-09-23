@@ -36,7 +36,7 @@ Raw run prevention is an alright statistic, its a good thing to measure _how wel
 
 ### cPV+ vs. Pitching+ (FanGraphs)
 
-Let me start this section by saying that Pitching+ is a fantastic metric and shares some similarities with cPV+ and that's why it gets its own section, I want to distinguish these two so no one asks "isn't this just Pitching+"
+Let me start this section by saying that Pitching+ is a fantastic metric and shares some similarities with cPV+ and that's why it gets its own section, I want to distinguish these two so no one asks "isn't this just Pitching+?"
 
 While both models aim to grade total pitch execution rather than just pure shape, they approach the problem differently in how its calculated:
 
