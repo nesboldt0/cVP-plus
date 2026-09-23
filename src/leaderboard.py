@@ -65,6 +65,7 @@ def show_leaderboard(min_pitches=750, top_n=15, sort_by="cPV_plus", ascending=Fa
 
 # this is just to take all the data we already have and put it on a readable "scout card"
 # this makes looking up pitchers stats actually bearable to look at
+# if you don't beleive me, go look at the raw CSV files and try and read them
 def get_scout_card(player_name):
     """Print a detailed player summary and pitch-level repertoire card."""
     matches = pitchers[
