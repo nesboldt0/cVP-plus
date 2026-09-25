@@ -7,6 +7,7 @@ from datetime import datetime
 from pybaseball import statcast
 
 # I am only doing the 2025 season for this due to it being the most recent FULLY completed season
+# Could potentially do the 2024 season for greater accuracy
 SEASON_START = "2025-03-27"
 SEASON_END = "2025-09-28"
 RAW_DIR = "raw_chunks_2025"
