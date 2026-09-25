@@ -135,7 +135,7 @@ if __name__ == "__main__":
         help="Show bottom of the leaderboard instead of top",
     )
     args = parser.parse_args()
-
+    # If we want to get a player, get the player, otehrwise we can just print the leaderboard
     if args.player:
         get_scout_card(args.player)
     else:
